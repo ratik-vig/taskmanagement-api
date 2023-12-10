@@ -23,12 +23,10 @@ public class ProjectService {
     @Autowired
     UserRepository userRepository;
 
+    public ProjectCreateResponse createProject(ProjectCreateRequest project, int userId) throws EntityNotFoundException {
 
-    public ProjectCreateResponse createProject(ProjectCreateRequest project) throws EntityNotFoundException {
-
-        User user = userRepository.findById(project.userId()).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
         Project newProject = null;
-
         try {
             newProject = projectRepository.save(new Project(null, project.projectName(), new Date(project.startDate()), null, new HashSet<User>()));
             user.getProjects().add(newProject);

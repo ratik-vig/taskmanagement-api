@@ -8,8 +8,7 @@ public record ProjectCreateRequest(
 
         String startDate,
 
-        String completionDate,
+        String completionDate
 
-        Integer userId
 ){
 }

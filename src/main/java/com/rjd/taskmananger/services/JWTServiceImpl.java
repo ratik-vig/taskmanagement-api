@@ -15,9 +15,9 @@ import java.util.function.Function;
 @Service
 public class JWTServiceImpl implements JWTService{
 
-    public String generateToken(UserDetails userDetails){
-        System.out.println("in here" + userDetails.getUsername());
+    public String generateToken(UserDetails userDetails, Integer userId){
         return Jwts.builder().setSubject(userDetails.getUsername())
+                .claim("userId", userId)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
@@ -35,7 +35,12 @@ public class JWTServiceImpl implements JWTService{
     }
 
     public String extractUserName(String token){
+        System.out.println("check here also" + token);
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public Integer extractUserId(String token){
+        return extractAllClaims(token).get("userId", Integer.class);
     }
 
     private Claims extractAllClaims(String token){
@@ -47,8 +52,6 @@ public class JWTServiceImpl implements JWTService{
 
     public boolean isTokenValid(String token, UserDetails userDetails){
         String userEmail = extractUserName(token);
-        System.out.println(userEmail);
-        System.out.println(isTokenExpired(token));
         return userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 

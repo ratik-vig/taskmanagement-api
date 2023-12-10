@@ -48,7 +48,7 @@ public class UserController {
             response.put("data", token);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch(EntityNotFoundException e){
-            response.put("error", e.getMessage());
+            response.put("error", "User does not exist. Please sign up");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch(Exception e){
             e.printStackTrace();
