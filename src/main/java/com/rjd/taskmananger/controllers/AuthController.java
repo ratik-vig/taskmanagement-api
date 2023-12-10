@@ -13,9 +13,9 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user){
-        userRepository.save(user);
-        return new ResponseEntity<>("user", HttpStatus.CREATED);
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<String> login(@RequestBody User user){
+//        userRepository.save(user);
+//        return new ResponseEntity<>("user", HttpStatus.CREATED);
+//    }
 }
