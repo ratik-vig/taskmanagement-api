@@ -52,9 +52,14 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     }
 
     public UserLoginResponse loginUser(UserLoginRequest request) throws EntityNotFoundException{
-
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.userEmail(), request.userPassword()));
-        User user = userRepository.findByUserEmail(request.userEmail()).orElseThrow(() -> new EntityNotFoundException("User does not exist"));
-        return new UserLoginResponse(jwtService.generateToken(user , user.getUserId()));
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.userEmail(), request.userPassword()));
+            User user = userRepository.findByUserEmail(request.userEmail()).orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+            return new UserLoginResponse(jwtService.generateToken(user , user.getUserId()));
+        }catch(Exception e){
+            if(e.getMessage().equals("Bad credentials")){
+                throw new EntityNotFoundException();
+            }else throw new RuntimeException("Could not log in. Please try again");
+        }
     }
 }
