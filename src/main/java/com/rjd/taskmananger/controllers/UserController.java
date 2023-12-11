@@ -47,9 +47,6 @@ public class UserController {
             UserLoginResponse token = authenticationService.loginUser(request);
             response.put("data", token);
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }catch(EntityNotFoundException e){
-            response.put("error", "Incorrect email or password");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch(Exception e){
             response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -27,11 +27,11 @@ public class ProjectController {
 
     @PostMapping("/create")
     @Transactional
-    public ResponseEntity<Map> createNewProject(@RequestBody ProjectCreateRequest project){
+    public ResponseEntity<Map> createNewProject(@RequestBody ProjectCreateRequest project, @RequestHeader("Authorization") String token){
         Map<String, Object> response = new HashMap<>();
         Integer userId = 0;
         try{
-            userId = jwtService.extractUserId("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyYXRpa3ZpZzIyQGdtYWlsLmNvbSIsInVzZXJJZCI6NSwiaWF0IjoxNzAyMjM5Mzc1LCJleHAiOjE3MDIzMjU3NzV9.bqfDhrfV1oKaMG2cvok-tSuW4JwHOBz57m3Ap0TvLI0");
+            userId = jwtService.extractUserId(token.substring(7));
 
             ProjectCreateResponse newProject = projectService.createProject(project, userId);
             response.put("data", newProject);
