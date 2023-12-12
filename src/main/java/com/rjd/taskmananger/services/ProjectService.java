@@ -44,6 +44,28 @@ public class ProjectService {
         );
     }
 
+    public ProjectCreateResponse updateProjectById(int projectId, ProjectCreateRequest request) throws EntityNotFoundException {
+
+        Project project = projectRepository.findByProjectId(projectId).orElseThrow(EntityNotFoundException::new);
+        Project updatedProject = null;
+        try {
+            project.setProjectName(request.projectName());
+            project.setStartDate(new Date(request.startDate()));
+            project.setCompletionDate(request.completionDate() == null ? null : new Date(request.completionDate()));
+            updatedProject = projectRepository.save(project);
+        }catch(Exception e){
+            throw new RuntimeException("Error updating project");
+        }
+
+        return new ProjectCreateResponse(
+                updatedProject.getProjectId(),
+                updatedProject.getProjectName(),
+                updatedProject.getStartDate(),
+                updatedProject.getCompletionDate()
+        );
+
+    }
+
     public List<ProjectCreateResponse> getAllProjects() {
 
         try {
@@ -66,4 +88,5 @@ public class ProjectService {
             throw new RuntimeException("Error getting project");
         }
     }
+
 }

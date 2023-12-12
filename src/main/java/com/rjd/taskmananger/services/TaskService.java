@@ -1,5 +1,6 @@
 package com.rjd.taskmananger.services;
 
+import com.rjd.taskmananger.dto.ProjectCreateResponse;
 import com.rjd.taskmananger.dto.TaskCreateRequest;
 import com.rjd.taskmananger.dto.TaskCreateResponse;
 import com.rjd.taskmananger.model.Project;
@@ -132,12 +133,25 @@ public class TaskService {
                 .orElseThrow(() -> {
                     throw new EntityNotFoundException("Task not found with ID: " + taskId);
                 });
+        User assignedTo = userRepository.findByUserId(request.assignedTo())
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("User id not found");
+                });
+        User assignedBy = userRepository.findByUserId(request.assignedBy())
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("User id not found");
+                });
         Task updatedTask = null;
         try{
+            task.setTaskName(request.taskName());
+            task.setStartDate(new Date(request.startDate()));
+            task.setDueDate(new Date(request.dueDate()));
             task.setTaskPriority(request.taskPriority());
             task.setTaskStatus(request.taskStatus());
             task.setLastUpdated(new Date());
             task.setEndDate(request.endDate() == "" ? null : new Date(request.endDate()));
+            task.setAssignedBy(assignedBy);
+            task.setAssignedTo(assignedTo);
             updatedTask = taskRepository.save(task);
         }catch(Exception e){
             throw new RuntimeException("Error creating task");
@@ -157,4 +171,5 @@ public class TaskService {
                 updatedTask.getAssignedBy().getUserFname() + " " + updatedTask.getAssignedBy().getUserLname()
         );
     }
+
 }
