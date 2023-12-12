@@ -6,9 +6,6 @@ import java.util.Set;
 public record ProjectCreateRequest(
         String projectName,
 
-        String startDate,
-
-        String completionDate
-
+        String startDate
 ){
 }
