@@ -31,7 +31,7 @@ public class Comments {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
 
 }

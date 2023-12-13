@@ -55,7 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.userEmail(), request.userPassword()));
             User user = userRepository.findByUserEmail(request.userEmail()).orElseThrow(() -> new EntityNotFoundException("User does not exist"));
-            return new UserLoginResponse(jwtService.generateToken(user , user.getUserId()));
+            return new UserLoginResponse(jwtService.generateToken(user , user.getUserId(), user.getUserFname() + " " + user.getUserLname()));
         }catch(Exception e){
             if(e.getMessage().equals("Bad credentials")){
                 throw new EntityNotFoundException();

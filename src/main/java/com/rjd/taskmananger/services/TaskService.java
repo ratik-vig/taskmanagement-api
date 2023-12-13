@@ -1,11 +1,11 @@
 package com.rjd.taskmananger.services;
 
-import com.rjd.taskmananger.dto.ProjectCreateResponse;
-import com.rjd.taskmananger.dto.TaskCreateRequest;
-import com.rjd.taskmananger.dto.TaskCreateResponse;
+import com.rjd.taskmananger.dto.*;
+import com.rjd.taskmananger.model.Comments;
 import com.rjd.taskmananger.model.Project;
 import com.rjd.taskmananger.model.Task;
 import com.rjd.taskmananger.model.User;
+import com.rjd.taskmananger.repository.CommentRepository;
 import com.rjd.taskmananger.repository.ProjectRepository;
 import com.rjd.taskmananger.repository.TaskRepository;
 import com.rjd.taskmananger.repository.UserRepository;
@@ -28,6 +28,9 @@ public class TaskService {
 
     @Autowired
     TaskRepository taskRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     public TaskCreateResponse createNewTask(TaskCreateRequest request) throws EntityNotFoundException{
         User assignedTo = userRepository.findByUserId(request.assignedTo())
@@ -169,6 +172,36 @@ public class TaskService {
                 updatedTask.getProject().getProjectName(),
                 updatedTask.getAssignedTo().getUserFname() + " " + updatedTask.getAssignedTo().getUserLname(),
                 updatedTask.getAssignedBy().getUserFname() + " " + updatedTask.getAssignedBy().getUserLname()
+        );
+    }
+
+    public CommentResponse addComment(Integer taskId, CommentRequest request) throws EntityNotFoundException{
+        Task task = taskRepository.findByTaskId(taskId)
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("Task not found with ID: " + taskId);
+                });
+        User user = userRepository.findByUserId(request.userId())
+                .orElseThrow(() -> {
+                    throw new EntityNotFoundException("User id not found");
+                });
+        Comments newComment = null;
+        try{
+            newComment = commentRepository.save(new Comments(
+                    null,
+                    request.comment(),
+                    new Date(request.commentDate()),
+                    task,
+                    user
+            ));
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("Error adding comment");
+        }
+
+        return new CommentResponse(
+                newComment.getComment(),
+                newComment.getCommentDate().toString(),
+                newComment.getUser().getUserFname() + " " + newComment.getUser().getUserLname()
         );
     }
 

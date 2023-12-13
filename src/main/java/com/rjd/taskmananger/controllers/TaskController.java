@@ -1,8 +1,6 @@
 package com.rjd.taskmananger.controllers;
 
-import com.rjd.taskmananger.dto.ProjectCreateResponse;
-import com.rjd.taskmananger.dto.TaskCreateRequest;
-import com.rjd.taskmananger.dto.TaskCreateResponse;
+import com.rjd.taskmananger.dto.*;
 import com.rjd.taskmananger.services.TaskService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -96,6 +94,24 @@ public class TaskController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }catch(Exception e){
             response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/addComment/{taskId}")
+    public ResponseEntity<Map> addComment(@PathVariable Integer taskId, @RequestBody CommentRequest request){
+        Map<String, Object> response = new HashMap<>();
+        try{
+            CommentResponse resp = taskService.addComment(taskId, request);
+            response.put("data", resp);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch(EntityNotFoundException e){
+            response.put("error", e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }catch(Exception e){
+            response.put("error", e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
