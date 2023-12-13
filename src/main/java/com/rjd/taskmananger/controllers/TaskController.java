@@ -1,6 +1,7 @@
 package com.rjd.taskmananger.controllers;
 
 import com.rjd.taskmananger.dto.*;
+import com.rjd.taskmananger.services.JWTService;
 import com.rjd.taskmananger.services.TaskService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -19,6 +20,9 @@ public class TaskController {
 
     @Autowired
     TaskService taskService;
+
+    @Autowired
+    JWTService jwtService;
 
     @PostMapping("/create")
     @Transactional
@@ -99,10 +103,12 @@ public class TaskController {
     }
 
     @PostMapping("/addComment/{taskId}")
-    public ResponseEntity<Map> addComment(@PathVariable Integer taskId, @RequestBody CommentRequest request){
+    public ResponseEntity<Map> addComment(@PathVariable Integer taskId, @RequestBody CommentRequest request, @RequestHeader("Authorization") String token){
         Map<String, Object> response = new HashMap<>();
         try{
-            CommentResponse resp = taskService.addComment(taskId, request);
+            Integer userId = jwtService.extractUserId(token.substring(7));
+
+            CommentResponse resp = taskService.addComment(taskId, request, userId);
             response.put("data", resp);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch(EntityNotFoundException e){
@@ -112,6 +118,21 @@ public class TaskController {
         }catch(Exception e){
             response.put("error", e.getMessage());
             e.printStackTrace();
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getComments/{taskId}")
+    public ResponseEntity<Map> getCommentsByTask(@PathVariable Integer taskId){
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("data", taskService.getCommentsByTaskId(taskId));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }catch(EntityNotFoundException e){
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }catch(Exception e){
+            response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

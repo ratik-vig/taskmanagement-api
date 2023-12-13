@@ -175,12 +175,13 @@ public class TaskService {
         );
     }
 
-    public CommentResponse addComment(Integer taskId, CommentRequest request) throws EntityNotFoundException{
+    public CommentResponse addComment(Integer taskId, CommentRequest request, Integer userId) throws EntityNotFoundException{
+
         Task task = taskRepository.findByTaskId(taskId)
                 .orElseThrow(() -> {
                     throw new EntityNotFoundException("Task not found with ID: " + taskId);
                 });
-        User user = userRepository.findByUserId(request.userId())
+        User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> {
                     throw new EntityNotFoundException("User id not found");
                 });
@@ -189,7 +190,7 @@ public class TaskService {
             newComment = commentRepository.save(new Comments(
                     null,
                     request.comment(),
-                    new Date(request.commentDate()),
+                    new Date(),
                     task,
                     user
             ));
@@ -203,6 +204,26 @@ public class TaskService {
                 newComment.getCommentDate().toString(),
                 newComment.getUser().getUserFname() + " " + newComment.getUser().getUserLname()
         );
+    }
+
+    public List<CommentResponse> getCommentsByTaskId(Integer taskId) throws EntityNotFoundException{
+        Task task = taskRepository.findByTaskId(taskId).orElseThrow(() -> {
+            throw new EntityNotFoundException("Task not found with ID: " + taskId);
+        });
+
+        try{
+            List<CommentResponse> comments = commentRepository.findCommentsByTaskId(task)
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .map(comment -> new CommentResponse(
+                            comment.getComment(),
+                            comment.getCommentDate().toString(),
+                            comment.getUser().getUserFname() + " " + comment.getUser().getUserLname()
+                    )).collect(Collectors.toList());
+            return comments;
+        }catch(Exception e){
+            throw new RuntimeException("Error creating task");
+        }
     }
 
 }
