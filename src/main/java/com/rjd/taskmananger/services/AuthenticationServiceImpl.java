@@ -25,7 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private PasswordHasher passwordEncoder;
 
     @Autowired
     private AuthenticationManager authenticationManager;

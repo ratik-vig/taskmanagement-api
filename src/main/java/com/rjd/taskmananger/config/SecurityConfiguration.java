@@ -1,5 +1,6 @@
 package com.rjd.taskmananger.config;
 
+import com.rjd.taskmananger.services.PasswordHasher;
 import com.rjd.taskmananger.services.UserService;
 import com.rjd.taskmananger.services.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class SecurityConfiguration {
     @Autowired
     private UserService userService;
 
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
@@ -58,7 +61,7 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+        return new PasswordHasher();
     }
 
     @Bean
